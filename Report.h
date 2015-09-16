@@ -29,6 +29,7 @@
 #define REPORT_ALTHOLD_STATUS    11
 #define REPORT_MODE_STATUS       12
 #define REPORT_FLASH_STATUS      13
+#define REPORT_GPS_STATUS        14
 
 #define REPORT_FORMAT_TEXT        0 
 #define REPORT_FORMAT_BINARY      1 

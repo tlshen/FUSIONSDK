@@ -41,6 +41,7 @@
 #endif
 #ifdef GPS
 #define GPS_UBLOX
+#define GPS_UART
 #ifdef GPS_UART
 #define GPS_BAUD      9600
 #endif

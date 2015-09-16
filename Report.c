@@ -26,6 +26,7 @@
 #include "ssv7241.h"
 #include "RC_ssv.h"
 #include "motors.h"
+#include "gps.h"
 typedef struct {
 	int16_t rcData[RC_CHANS];
 	float  rssif;
@@ -229,7 +230,7 @@ void report_rc_status()
 	RcState.usessv = IsSSVConnected();
 	RcState.rssif = (float)((int)(GetRSSIf()*1000))/1000;
 	RcState.rcconnected = IsRCConnected();
-
+	
 	getRC(&RcState.rcData[0]);
 	
 	if (report_format == REPORT_FORMAT_BINARY) {
@@ -285,6 +286,26 @@ void report_flash_status()
 		printf("@On Flash:ACC,GYRO,MAG,QFactor:%d,%d,%d,%d\n",State[0],State[1],State[2],State[3]);
 	}
 }
+#ifdef GPS
+void report_gps_status()
+{
+  GPS_Info_T* GPSinfo;
+  GPSinfo = GetGPSInfo();
+	/*CAL_FLASH_STATE_T *FlashState;
+	uint8_t State[4];
+	FlashState = GetFlashState();
+	State[0] = (uint8_t)FlashState->ACC_FLASH;
+	State[1] = (uint8_t)FlashState->GYRO_FLASH;
+	State[2] = (uint8_t)FlashState->MAG_FLASH;
+	State[3] = (uint8_t)FlashState->MAG_QFACTOR;
+	if (report_format == REPORT_FORMAT_BINARY) {
+		Serial_write((char*)State, 4);
+	}
+	else if (report_format == REPORT_FORMAT_TEXT) {
+		printf("@On Flash:ACC,GYRO,MAG,QFactor:%d,%d,%d,%d\n",State[0],State[1],State[2],State[3]);
+	}*/
+}
+#endif
 #if STACK_BARO
 void report_althold_status()
 {
@@ -349,6 +370,8 @@ void report_status()
 		report_mode = REPORT_MODE_STATUS;  
 	else if (mode == 'f') // 'm'ode status
 		report_mode = REPORT_FLASH_STATUS; 
+  else if (mode == 'g') // 'g'ps status
+		report_mode = REPORT_GPS_STATUS; 
 }
 void report_sensors()
 {
@@ -395,5 +418,10 @@ void report_sensors()
 	}
 	else if (report_mode == REPORT_FLASH_STATUS) {
 		report_flash_status();
+	}
+#ifdef GPS
+  else if (report_mode == REPORT_GPS_STATUS) {
+		report_gps_status();
+#endif
 	}
 }
