@@ -43,7 +43,13 @@ uint8_t  GPS_update;                              // a binary toogle to distinct
 uint16_t GPS_ground_course;                       //                   - unit: degree*10
 uint8_t  GPS_Present;                             // Checksum from Gps serial
 uint8_t  GPS_Enable;
+uint8_t  GPS_Fixed;
 } GPS_Info_T;
+typedef struct {
+int32_t  GPS_coord[2];
+uint8_t  GPS_numSat;
+uint8_t  GPS_Fixed;
+} GPS_Report_T;
 typedef struct PID_PARAM_ {
   float kP;
   float kI;

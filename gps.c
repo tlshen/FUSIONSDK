@@ -467,6 +467,7 @@ bool GPS_NMEA_newFrame(char c) {
           GPS_Info.GPS_coord[LON] = -GPS_Info.GPS_coord[LON];
         else if (param == 6) {
           fgps.GPS_FIX = (string[0]  > '0');
+          GPS_Info.GPS_Fixed = fgps.GPS_FIX;
         }
         else if (param == 7) {
           GPS_Info.GPS_numSat = grab_fields(string,0);
