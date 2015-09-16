@@ -297,7 +297,7 @@ void report_gps_status()
   GPSreport.GPS_numSat = GPSinfo->GPS_numSat;
   GPSreport.GPS_Fixed = GPSinfo->GPS_Fixed;
 	if (report_format == REPORT_FORMAT_BINARY) {
-		Serial_write((char*)&GPSreport, sizeof(GPS_Report_T));
+		Serial_write((char*)&GPSreport, 10);
 	}
 	else if (report_format == REPORT_FORMAT_TEXT) {
 		printf("@GPS:LAT,LON,Num,Fix:%d,%d,%d,%d\n",GPSreport.GPS_coord[0],GPSreport.GPS_coord[1],GPSreport.GPS_numSat,GPSreport.GPS_Fixed);

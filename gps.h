@@ -46,7 +46,7 @@ uint8_t  GPS_Enable;
 uint8_t  GPS_Fixed;
 } GPS_Info_T;
 typedef struct {
-int32_t  GPS_coord[2];
+uint32_t  GPS_coord[2];
 uint8_t  GPS_numSat;
 uint8_t  GPS_Fixed;
 } GPS_Report_T;
