@@ -36,6 +36,7 @@
 /*---------------------------------------------------------------------------------------------------------*/
 volatile uint32_t g_u32AdcIntFlag;
 static uint16_t  AdcData;
+static int8_t BatteryPercent=0;
 /*---------------------------------------------------------------------------------------------------------*/
 /* EADC interrupt handler                                                                                  */
 /*---------------------------------------------------------------------------------------------------------*/
@@ -97,8 +98,14 @@ void UpdateBattery()
 }
 uint8_t GetBattery()
 {
-	int8_t BatteryPercent = (AdcData-2700)*100/(3240-2700);
+	int8_t CurrentBattery;
+	CurrentBattery = ((AdcData-2700)*100/(3240-2700));
+	BatteryPercent = BatteryPercent*0.95f + CurrentBattery*0.05f;
+	//BatteryPercent = CurrentBattery;
 	if(BatteryPercent<0)
 		BatteryPercent = 0;
+	else if(BatteryPercent>100)
+		BatteryPercent = 100;
+		
 	return BatteryPercent;
 }

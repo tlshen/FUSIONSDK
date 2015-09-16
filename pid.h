@@ -30,11 +30,17 @@
 
 #include <stdbool.h>
 #include "Def.h"
-#define RATE_KP_1806 0.9f/*15*/
+#ifdef HEX6X
+#define RATE_KP_1806 2.0f/*0.9f*//*15*/
 #define RATE_KI_1806 0.1f/*9.5*/
-#define RATE_KD_1806 0
+#define RATE_KD_1806 3/*0*/
+#else
+#define RATE_KP_1806 1.3f
+#define RATE_KI_1806 0.1f
+#define RATE_KD_1806 0.65f
+#endif
 #define LEVEL_KP_1806 3
-#define LEVEL_KI_1806 1.5f/*0.1f*//*1*/
+#define LEVEL_KI_1806 1.1f
 #define LEVEL_KD_1806 0
 #define RATE_KP_1804 24
 #define RATE_KI_1804 10.5
@@ -96,7 +102,10 @@
 #endif
 
 #define DEFAULT_PID_INTEGRATION_LIMIT  5000.0
-
+#undef max
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#undef min
+#define min(a,b) ((a) < (b) ? (a) : (b))
 typedef struct
 {
   float desired;     //< set point
@@ -216,5 +225,6 @@ void pidSetKd(PidObject* pid, const float kd);
 void pidSetDt(PidObject* pid, const float dt);
 
 void pidSetPID(PidObject* pid, float kp, float ki, float kd);
+float constrain(float value, const float minVal, const float maxVal);
 #endif /* PID_H_ */
 

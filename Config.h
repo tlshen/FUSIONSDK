@@ -44,5 +44,6 @@
 /************************/
 #define OPTION_RC
 #define BLDC
+//#define GPS
 #endif //CONFIG_H_
 

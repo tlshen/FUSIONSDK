@@ -31,10 +31,6 @@
 #ifdef BMP280
 #include "BMP280.h"
 #endif
-#undef max
-#define max(a,b) ((a) > (b) ? (a) : (b))
-#undef min
-#define min(a,b) ((a) < (b) ? (a) : (b))
 #define NEAR_LAND_TH 0.3f
 #define AUTO_LAND_SPEED     0.03f //(Meter/Sec)
 #define NEAR_LAND_COUNT_TH 80
@@ -92,10 +88,6 @@ float finalLandFactor=FINAL_LAND_FACTOR;
 void SetCalibratingB(uint8_t c)
 {
 	calibratingB = c;
-}
-static float constrain(float value, const float minVal, const float maxVal)
-{
-  return min(maxVal, max(minVal,value));
 }
 float getAslSpeed()
 {

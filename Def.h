@@ -39,6 +39,12 @@
 #define USE_I2C_PORT0
 #define HEX6X
 #endif
+#ifdef GPS
+#define GPS_UBLOX
+#ifdef GPS_UART
+#define GPS_BAUD      9600
+#endif
+#endif
 /****************************************************************/
 /*                    Sensor Type definitions                   */
 /****************************************************************/

@@ -20,5 +20,9 @@ void SendChar(int ch);
 char Serial_read(void);
 char GetChar(void);
 int Serial_available(void);
+int gpsnumbers(void);
+int GPS_available(void);
+char GPS_read(void);
+void GPS_write(char* id, int num, int delay);
 #endif //RETARGET_H_
 

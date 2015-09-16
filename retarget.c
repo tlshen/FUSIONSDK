@@ -21,7 +21,7 @@
 #pragma import _printf_widthprec
 #endif
 #endif
-
+#define GPS_PORT      UART1
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
 /*---------------------------------------------------------------------------------------------------------*/
@@ -638,5 +638,27 @@ void Serial_write(char* id, int num)
 	for(i=0; i<num; i++) {
 		while(DEBUG_PORT->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
 		DEBUG_PORT->DAT = id[i];
+	}
+}
+int gpsnumbers(void)
+{
+	return ((GPS_PORT->FIFOSTS>>8)&0x3f);  
+}
+int GPS_available(void)
+{
+	return gpsnumbers();
+}
+char GPS_read(void)
+{
+	return (GPS_PORT->DAT);
+}
+void GPS_write(char* id, int num, int delay)
+{
+	int i;
+	for(i=0; i<num; i++) {
+		while(GPS_PORT->FIFOSTS & UART_FIFOSTS_TXFULL_Msk);
+		GPS_PORT->DAT = id[i];
+		if(delay)
+			DelayMsec(delay); //simulating a 38400baud pace (or less), otherwise commands are not accepted by the device.
 	}
 }

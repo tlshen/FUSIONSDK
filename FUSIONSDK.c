@@ -37,6 +37,7 @@
 #include "LED.h"
 #include "battery.h"
 #include "motors.h"
+#include "gps.h"
 #ifdef OPTION_RC
 #include "RC.h"
 #include "RC_ssv.h"
@@ -85,10 +86,8 @@ void setupSystemClock()
 	LOCKREG();	// Lock the protected registers
 #endif
 }
-
-void setupUART()
+void setupCommandUART()
 {
-#ifdef M451
 	/* Enable peripheral clock */
 	CLK_EnableModuleClock(UART0_MODULE);
 	/* Peripheral clock source */
@@ -97,9 +96,13 @@ void setupUART()
 	SYS->GPD_MFPL = SYS_GPD_MFPL_PD0MFP_UART0_RXD | SYS_GPD_MFPL_PD1MFP_UART0_TXD;
 	/* Reset UART module */
 	SYS_ResetModule(UART0_RST);
-
 	/* Configure UART0 and set UART0 Baudrate */
 	UART_Open(UART0, 115200);
+}
+void setupUART()
+{
+#ifdef M451
+	setupCommandUART();
 #else
 	STR_UART_T param;
 	DrvGPIO_InitFunction(E_FUNC_UART1);
@@ -118,8 +121,11 @@ void setupUART()
 void setup()
 {
 	setupSystemClock();
-	setupUART();
 	setup_system_tick(SYSTEM_TICK_FREQ);
+	setupUART();
+#ifdef GPS
+	setupGPS();
+#endif
 	I2C_Init();
 	FlashInit();
 	UpdateBoardVersion(false);
@@ -229,6 +235,7 @@ void CommandProcess()
 		} // Skip character
 	}
 }
+
 // Main Control loop
 void loop()
 {
@@ -236,6 +243,9 @@ void loop()
 	while(getTickCount()<nextTick);
 	nextTick = getTickCount()+TICK_FRAME_PERIOD;
 	CommandProcess();
+#ifdef GPS
+  GPSCommandProcess();
+#endif
 	SensorsRead(SENSOR_ACC|SENSOR_GYRO|SENSOR_MAG|SENSOR_BARO,1);
 #ifdef OPTION_RC
 	if(IsSSVConnected()) {

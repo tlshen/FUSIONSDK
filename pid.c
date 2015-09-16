@@ -144,4 +144,8 @@ void pidSetKd(PidObject* pid, const float kd)
 void pidSetDt(PidObject* pid, const float dt) {
     pid->dt = dt;
 }
+float constrain(float value, const float minVal, const float maxVal)
+{
+  return min(maxVal, max(minVal,value));
+}
 

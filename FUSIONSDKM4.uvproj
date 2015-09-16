@@ -531,6 +531,11 @@
               <FileType>1</FileType>
               <FilePath>.\BMP280.c</FilePath>
             </File>
+            <File>
+              <FileName>gps.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\gps.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -745,6 +750,11 @@
               <FileName>BMP280.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\BMP280.h</FilePath>
+            </File>
+            <File>
+              <FileName>gps.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\gps.h</FilePath>
             </File>
           </Files>
         </Group>
