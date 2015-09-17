@@ -742,7 +742,7 @@ void GPS_NewData(void) {
 	int32_t  dir;
 	uint8_t axis;
   int16_t speed;
-	uint8_t c = GPSBufferAvailable();
+	uint16_t c = GPSBufferAvailable();
 	while (c--) {
 		if (GPS_newFrame(GPSBufferRead())) {
 			if (GPS_Info.GPS_update == 1) 
