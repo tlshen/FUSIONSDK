@@ -420,6 +420,6 @@ void report_sensors()
 #ifdef GPS
   else if (report_mode == REPORT_GPS_STATUS) {
 		report_gps_status();
+  }
 #endif
-	}
 }
