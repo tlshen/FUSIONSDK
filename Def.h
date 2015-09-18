@@ -38,6 +38,7 @@
 #else
 #define USE_I2C_PORT0
 #define HEX6X
+#define H300
 #endif
 #ifdef GPS
 #define GPS_UBLOX

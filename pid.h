@@ -31,9 +31,16 @@
 #include <stdbool.h>
 #include "Def.h"
 #ifdef HEX6X
-#define RATE_KP_1806 2.0f/*0.9f*//*15*/
-#define RATE_KI_1806 0.1f/*9.5*/
-#define RATE_KD_1806 3/*0*/
+#ifdef H630
+#define RATE_KP_1806 1.2f
+#define RATE_KI_1806 0.1f
+#define RATE_KD_1806 3
+#endif
+#ifdef H300
+#define RATE_KP_1806 3
+#define RATE_KI_1806 0.1f
+#define RATE_KD_1806 4
+#endif
 #else
 #define RATE_KP_1806 1.3f
 #define RATE_KI_1806 0.1f
