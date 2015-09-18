@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include "M451Series.h"
-
+#include "Timer_Ctrl.h"
 #if defined ( __CC_ARM   )
 #if (__ARMCC_VERSION < 400000)
 #else
