@@ -32,9 +32,9 @@
 #include "Def.h"
 #ifdef HEX6X
 #ifdef H630
-#define RATE_KP_1806 1.2f
+#define RATE_KP_1806 4
 #define RATE_KI_1806 0.1f
-#define RATE_KD_1806 3
+#define RATE_KD_1806 5
 #endif
 #ifdef H300
 #define RATE_KP_1806 3
@@ -77,12 +77,16 @@
 #define PID_PITCH_RATE_KI  RATE_KI_1806
 #define PID_PITCH_RATE_KD  RATE_KD_1806
 #define PID_PITCH_RATE_INTEGRATION_LIMIT   100.0
-
+#ifdef H630
+#define PID_YAW_RATE_KP  2/*20.5*/
+#define PID_YAW_RATE_KI  28/*5.19f*//*200*/
+#define PID_YAW_RATE_KD  0.0
+#else
 #define PID_YAW_RATE_KP  1.08f/*20.5*/
 #define PID_YAW_RATE_KI  14/*5.19f*//*200*/
 #define PID_YAW_RATE_KD  0.0
+#endif
 #define PID_YAW_RATE_INTEGRATION_LIMIT     500.0
-
 #define PID_ROLL_KP  LEVEL_KP_1806
 #define PID_ROLL_KI  LEVEL_KI_1806
 #define PID_ROLL_KD  LEVEL_KD_1806
