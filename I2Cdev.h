@@ -40,4 +40,6 @@ bool I2C_writeByte(uint8_t devAddr, uint8_t regAddr, uint8_t data);
 bool I2C_writeBits(uint8_t devAddr, uint8_t regAddr, uint8_t bitStart, uint8_t length, uint8_t data);
 bool I2C_writeBit(uint8_t devAddr, uint8_t regAddr, uint8_t bitNum, uint8_t data);
 bool I2C_writeWord(uint8_t devAddr, uint8_t regAddr, uint16_t data);
+void I2C_TriggerOnly(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t timeout);
+int8_t I2C_ReadOnly(uint8_t length, uint8_t *data);
 #endif

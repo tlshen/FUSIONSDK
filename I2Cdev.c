@@ -59,7 +59,26 @@ int8_t I2C_readBytes(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint8_t *
 	else
 		return 1;
 }
-
+int8_t I2C_ReadOnly(uint8_t length, uint8_t *data) 
+{
+	uint8_t ErrorFlag;
+	
+	ErrorFlag = NVT_GetBytes(data, length);
+	if(ErrorFlag)
+		return 0;
+	else
+		return 1;
+}
+void I2C_TriggerOnly(uint8_t devAddr, uint8_t regAddr, uint8_t length, uint16_t timeout) 
+{
+	NVT_SetDeviceAddress(devAddr);
+	NVT_TriggerRead(regAddr, length, timeout);
+#ifdef I2CDEV_SERIAL_DEBUG
+	Serial.print(". Done (");
+	Serial.print(count, DEC);
+	Serial.println(" read).");
+	#endif
+}
 int8_t I2C_readByte(uint8_t devAddr, uint8_t regAddr, uint8_t *data, uint16_t timeout)
 {
 	return I2C_readBytes(devAddr, regAddr, 1, data, timeout);

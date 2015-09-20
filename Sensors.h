@@ -109,5 +109,9 @@ int32_t GetBaroBasePressure(void);
 float GetBaroAltitude(void);
 void SetBaroAltitude(float alt);
 BaroInfo_T* GetBaroInfo(void);
+void SensorReadMotion(void);
+void EnableSensorInt(void);
+bool beUpdateMotion(void);
+void SensorTriggerMotion(void);
 #endif
 #endif

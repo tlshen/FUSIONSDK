@@ -239,14 +239,20 @@ void CommandProcess()
 // Main Control loop
 void loop()
 {
+#ifndef USE_MOTION_INT
 	static uint32_t nextTick = 0;
 	while(getTickCount()<nextTick);
 	nextTick = getTickCount()+TICK_FRAME_PERIOD;
+#endif
 	CommandProcess();
 #ifdef GPS
   GPSCommandProcess();
 #endif
+#ifdef USE_MOTION_INT
+	SensorsRead(SENSOR_MAG|SENSOR_BARO,1);
+#else
 	SensorsRead(SENSOR_ACC|SENSOR_GYRO|SENSOR_MAG|SENSOR_BARO,1);
+#endif
 #ifdef OPTION_RC
 	if(IsSSVConnected()) {
 	ssv_rc_update();

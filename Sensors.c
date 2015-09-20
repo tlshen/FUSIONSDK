@@ -15,6 +15,8 @@
  */
 #include <stdio.h>
 #include <math.h>
+#include "M451Series.h"
+#include <gpio.h>
 #ifdef M451
 #else
 #include "NUC1xx.h"
@@ -42,6 +44,7 @@ SensorInit_T SensorInitState = {false,false,false};
 SensorInit_T SensorCalState  = {false,false,false,false};
 CAL_FLASH_STATE_T CalFlashState =  {false,false,false,0xff};
 Sensor_T Sensor;
+bool UpdateMotion = false;
 float GyroScale[3];
 float AccScale[3];
 float GyroOffset[3];
@@ -65,6 +68,35 @@ void SetFlashState(CAL_FLASH_STATE_T* State)
 	CalFlashState.MAG_FLASH = State->MAG_FLASH;
 	CalFlashState.MAG_QFACTOR = State->MAG_QFACTOR;
 }
+bool beUpdateMotion()
+{
+	return UpdateMotion;
+}
+/* Sensors Read */
+void SensorReadMotion()
+{
+#if STACK_ACC
+#if STACK_GYRO
+	int16_t rawACC[3],rawGYRO[3];
+#ifdef MPU6050
+	MPU6050_getMotion6(&rawACC[0],&rawACC[1], &rawACC[2],&rawGYRO[0],&rawGYRO[1], &rawGYRO[2]);
+#endif
+	ACC_ORIENTATION(rawACC[0],rawACC[1],rawACC[2]);
+	GYRO_ORIENTATION(rawGYRO[0],rawGYRO[1],rawGYRO[2]);
+#endif
+#endif
+}
+/* Sensors Trigger */
+void SensorTriggerMotion()
+{
+#if STACK_ACC
+#if STACK_GYRO
+#ifdef MPU6050
+	MPU6050_TriggerMotion6();
+#endif
+#endif
+#endif
+}
 void temperatureRead(float *temperatureOut)
 {
 #if STACK_ACC
@@ -79,6 +111,64 @@ void temperatureRead(float *temperatureOut)
 #ifdef MPU6050
 #endif
 #endif
+#ifdef USE_MOTION_INT
+#ifdef SENSOR_INT
+void EINT5_IRQHandler(void)
+{
+
+    /* To check if PB.0 external interrupt occurred */
+    if(GPIO_GET_INT_FLAG(PF, BIT0))
+    {
+        GPIO_CLR_INT_FLAG(PF, BIT0);
+        printf("PF.0 EINT5 occurred.\n");
+    }
+
+}
+
+void EnableSensorInt() {
+	/* Set PB multi-function pin for EINT1(PB.0) */
+    SYS->GPF_MFPL = SYS->GPF_MFPL & (~SYS_GPF_MFPL_PF0MFP_Msk) | SYS_GPF_MFPL_PF0MFP_INT5;
+	/* Configure PF.0 as EINT5 pin and enable interrupt by falling and rising edge trigger */
+    GPIO_SetMode(PF, BIT0, GPIO_MODE_INPUT);
+    GPIO_EnableInt(PF, 0, GPIO_INT_BOTH_EDGE);
+    NVIC_EnableIRQ(EINT5_IRQn);
+	/* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 * 10 KHz clock */
+    GPIO_SET_DEBOUNCE_TIME(GPIO_DBCTL_DBCLKSRC_LIRC, GPIO_DBCTL_DBCLKSEL_1024);
+    GPIO_ENABLE_DEBOUNCE(PF, BIT0);
+}
+#else
+void GPF_IRQHandler(void)
+{
+	int32_t mask;
+	
+	mask = GPIO_GET_INT_FLAG(PF, BIT0);
+
+	if(mask) {
+		GPIO_CLR_INT_FLAG(PF, mask);
+	} 
+	else {
+		PF->INTSRC = PF->INTSRC;
+		//printf("Un-expected interrupts.\n");
+	}
+	SensorReadMotion();
+	nvtInputSensorRawACC(&Sensor.rawACC[0]);
+	nvtInputSensorRawGYRO(&Sensor.rawGYRO[0]);
+	UpdateMotion = true;
+	//printf("PF.0 Int occurred.\n");
+}
+void SetupSensorInt() 
+{
+	SYS->GPF_MFPL &= ~(SYS_GPF_MFPL_PF0MFP_Msk);
+	SYS->GPF_MFPL |= (SYS_GPF_MFPL_PF0MFP_GPIO);
+	GPIO_SetMode(PF, BIT0, GPIO_MODE_QUASI);
+	GPIO_EnableInt(PF, 0, GPIO_INT_RISING);
+}
+void EnableSensorInt() 
+{
+	NVIC_EnableIRQ(GPF_IRQn);
+}
+#endif
+#endif
 /* Sensors Init */
 void SensorInitACC()
 {
@@ -89,6 +179,9 @@ void SensorInitACC()
 #ifdef MPU6050
 		SensorInitState.ACC_Done = MPU6050_initialize();
 		SensorInitState.GYRO_Done = SensorInitState.ACC_Done;
+#ifdef USE_MOTION_INT
+		SetupSensorInt();
+#endif
 #endif
 	}
 	if(SensorInitState.ACC_Done) {
@@ -243,21 +336,23 @@ void SensorInitBARO()
 	if(SensorInitState.BARO_Done)
 		SensorInitState.BARO_BRAND = BMP085;
 #endif
+#ifdef MS5611
 		SensorInitState.BARO_Done = ms5611Init();
 	if(SensorInitState.BARO_Done) {
 		SensorInitState.BARO_BRAND = MS5611;
 		printf("Baro Sensor - [MS5611]\n"); 
 	}
-	else {
+#endif
+#ifdef BMP280
+	 if(!SensorInitState.BARO_Done) {
 		SensorInitState.BARO_Done = Int_BMP280();
-	if(SensorInitState.BARO_Done) {
+		if(SensorInitState.BARO_Done) {
 			SensorInitState.BARO_BRAND = BMP280;
 			printf("Baro Sensor - [BMP280]\n"); 
 		}
-		else 
-			printf("Baro Sensor - [NA]\n"); 
 	}
-
+#endif
+	
 	if(SensorInitState.BARO_Done) {
 		switch (SensorInitState.BARO_BRAND) {
 #ifdef BMP085
@@ -271,18 +366,22 @@ void SensorInitBARO()
 		Sensor.BaroInfo.baroPressureSum = 0;
 			break;
 #endif
+#ifdef MS5611
 			case MS5611:
 			{
 		bool isMs5611TestPassed = ms5611SelfTest();
 		printf("Baro Test Passed:%d\n",isMs5611TestPassed);
 			}
 			break;
+#endif
+#ifdef BMP280
 			case BMP280:
 			{
 		bool isBMP280TestPassed = BMP280SelfTest();
 		printf("Baro Test Passed:%d\n",isBMP280TestPassed);
 			}
 			break;
+#endif
 		}
 		printf("BARO connect - [OK]\n");
 	}
@@ -302,6 +401,9 @@ void SensorsInit()
 #endif
 #if STACK_BARO
 	SensorInitBARO();
+#endif
+#ifdef USE_MOTION_INT
+	EnableSensorInt();
 #endif
 }
 
@@ -458,6 +560,12 @@ void SensorsRead(char SensorType, char interval)
 	if(SensorType&SENSOR_GYRO&&SensorInitState.GYRO_Done) {
 		SensorReadGYRO();
 		nvtInputSensorRawGYRO(&Sensor.rawGYRO[0]);
+	}
+#endif
+#ifdef USE_MOTION_INT
+	if(UpdateMotion) {
+		SensorTriggerMotion();
+		UpdateMotion = false;
 	}
 #endif
 }

@@ -25,4 +25,6 @@ void NVT_ReadByte(uint16_t address, uint8_t *data);
 uint8_t NVT_WriteByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len);
 uint8_t NVT_ReadByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len, uint16_t timeout);
 void    NVT_SetDeviceAddress(uint8_t devAddr);
+uint8_t NVT_GetBytes(uint8_t* data, uint8_t len);
+void    NVT_TriggerRead(uint8_t address, uint8_t len, uint16_t timeout);
 #endif

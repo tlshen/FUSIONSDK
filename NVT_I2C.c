@@ -657,7 +657,29 @@ uint8_t NVT_ReadByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len, u
 	
 	return ErrorFlag;
 }
-
+void NVT_TriggerRead(uint8_t address, uint8_t len, uint16_t timeout)
+{
+	RxLen0 = 0;
+	DataLen0 = 0;
+	EndFlag0 = 0;
+	ReadFlag = 0;
+	ErrorFlag = 0;
+	ContinueLen = len;
+	Tx_Data0[0] = address;
+	s_I2C0HandlerFn = (I2C_FUNC)I2C_Callback_Rx_Continue;
+	s_I2C1HandlerFn = (I2C_FUNC)I2C_Callback_Rx_Continue;
+	while(I2C_PORT->CTL & I2C_CTL_STO_Msk);
+	I2C_SET_CONTROL_REG(I2C_PORT, I2C_CTL_STA);
+}
+uint8_t NVT_GetBytes(uint8_t* data, uint8_t len)
+{
+	uint8_t i;
+	for(i = 0; i<len; i++)
+		data[i]=Rx_Data0[i];
+	
+	
+	return ErrorFlag;
+}
 #ifndef M451
 
 void I2C_Callback_TimeOutError(uint32_t status)

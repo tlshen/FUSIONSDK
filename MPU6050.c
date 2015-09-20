@@ -127,9 +127,12 @@ bool MPU6050_getIntDataReadyStatus() {
     I2C_readBit(devAddr, MPU6050_RA_INT_STATUS, MPU6050_INTERRUPT_DATA_RDY_BIT, buffer,0);
     return buffer[0];
 }
-
+void MPU6050_TriggerMotion6() {
+    I2C_TriggerOnly(devAddr, MPU6050_RA_ACCEL_XOUT_H, 14,0);
+}
 void MPU6050_getMotion6(int16_t* ax, int16_t* ay, int16_t* az, int16_t* gx, int16_t* gy, int16_t* gz) {
-    I2C_readBytes(devAddr, MPU6050_RA_ACCEL_XOUT_H, 14, buffer,0);
+    //I2C_readBytes(devAddr, MPU6050_RA_ACCEL_XOUT_H, 14, buffer,0);
+		I2C_ReadOnly(14, buffer);
     *ax = (((int16_t)buffer[0]) << 8) | buffer[1];
     *ay = (((int16_t)buffer[2]) << 8) | buffer[3];
     *az = (((int16_t)buffer[4]) << 8) | buffer[5];
@@ -265,7 +268,10 @@ void MPU6050_setDeviceID(uint8_t id) {
 void MPU6050_ADDR(uint8_t address) {
     devAddr = address;
 }
-
+void MPU6050_setIntEnabled(uint8_t enabled)
+{
+  I2C_writeByte(devAddr, MPU6050_RA_INT_ENABLE, enabled);
+}
 bool MPU6050_initialize() {
 	bool connect;
 	MPU6050_ADDR(MPU6050_DEFAULT_ADDRESS);
@@ -279,7 +285,13 @@ bool MPU6050_initialize() {
 		MPU6050_setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 		MPU6050_setFullScaleAccelRange(MPU6050_ACCEL_FS_8);
 		MPU6050_setRate(1);
+#ifdef USE_MOTION_INT
+		MPU6050_setDLPFMode(MPU6050_DLPF_BW_188);
+		MPU6050_setIntEnabled(TRUE);
+#else
 		MPU6050_setDLPFMode(MPU6050_DLPF_BW_42);
+#endif
+		
 #if defined(MPU6050_I2C_AUX_MASTER)
 		I2C_writeByte(devAddr, 0x37, 0x02); 
 		I2C_writeByte(devAddr, 0x6A, 0x20);             //USER_CTRL     -- DMP_EN=0 ; FIFO_EN=0 ; I2C_MST_EN=1 (I2C master mode) ; I2C_IF_DIS=0 ; FIFO_RESET=0 ; I2C_MST_RESET=0 ; SIG_COND_RESET=0

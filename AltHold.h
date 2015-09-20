@@ -31,6 +31,6 @@ ALTHOLD_STATE_T* GetAltHoldState(void);
 float getAslSpeed(void);
 float getAltHoldPIDVal(void);
 float getAccFuse(void);
-bool GetAutoLandMode(void);
 bool GetNearLand(void);
 #endif
+bool GetAutoLandMode(void);

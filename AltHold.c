@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "Def.h"
+static bool AutoLandMode = false;
 #if STACK_BARO
 #include "pid.h"
 #include "stabilizer.h"
@@ -79,7 +80,6 @@ static uint16_t altHoldMaxThrust    = 350;
 
 static bool altHoldMode = false;
 static bool altHoldModeOld = false;
-static bool AutoLandMode = false;
 uint16_t NearLandCount = 0;
 uint16_t calibratingB = 0;
 ALTHOLD_STATE_T AltHoldState;
@@ -104,10 +104,6 @@ float getAltHoldPIDVal()
 bool GetAltHoldMode()
 {
 	return altHoldMode;
-}
-bool GetAutoLandMode()
-{
-	return AutoLandMode;
 }
 ALTHOLD_STATE_T* GetAltHoldState()
 {
@@ -325,3 +321,8 @@ void stabilizerAltHoldUpdate(uint16_t *actuatorThrust)
 #endif
 }
 #endif
+bool GetAutoLandMode()
+{
+	return AutoLandMode;
+}
+
