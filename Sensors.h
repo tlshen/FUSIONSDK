@@ -57,7 +57,7 @@ typedef struct {
 #define ACC_SCALE_X           0.000061f
 #define ACC_SCALE_Y           0.000061f
 #define ACC_SCALE_Z           0.000061f
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 #define IMU_GYRO_FS_CFG       MPU6050_GYRO_FS_2000
 #define IMU_DEG_PER_LSB_CFG   MPU6050_DEG_PER_LSB_2000
 #define IMU_ACCEL_FS_CFG      MPU6050_ACCEL_FS_8

@@ -28,10 +28,17 @@
 #include "ssv7241.h"
 #include "RC_ssv.h"
 #ifdef M451
+#if (BOARD_CODE == 200)
+#define IO_STATE_ARM        PB, BIT0	//PA, BIT0
+#define IO_ARM              PB0				//PA0
+#define IO_STATE_HEAD_MODE  PB, BIT8	//PA, BIT1
+#define IO_MAG              PB8
+#else
 #define IO_STATE_ARM        PA, BIT0
 #define IO_ARM              PA0
 #define IO_STATE_HEAD_MODE  PA, BIT1
 #define IO_MAG              PA1
+#endif
 #define IO_STATE_HFREE_MODE PA, BIT2
 #define IO_HFREE_MODE       PA2
 #else

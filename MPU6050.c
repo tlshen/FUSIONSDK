@@ -298,5 +298,9 @@ bool MPU6050_initialize() {
 }
 bool MPU6050_testConnection() 
 {
-	return MPU6050_getDeviceID() == 0x34;
+#ifdef MPU6050
+	return MPU6050_getDeviceID() == MPU6050_DEVICE_ID;
+#else
+  return MPU6050_getDeviceID() == MPU6500_DEVICE_ID;
+#endif
 }

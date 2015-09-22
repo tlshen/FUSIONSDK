@@ -35,10 +35,61 @@
 
 #if (BOARD_CODE == 140)
 #define USE_I2C_PORT1
-#else
+/************************/
+/*      ACC/GYRO        */
+/************************/
+#define MPU6050
+/************************/
+/*        MAG           */
+/************************/
+#define HMC5883
+//#define AK8975
+/************************/
+/*       BARO           */
+/************************/
+//#define BMP085 0
+#define MS5611 1
+#define BMP280 2
+#endif
+#if (BOARD_CODE == 150)
 #define USE_I2C_PORT0
+/************************/
+/*      ACC/GYRO        */
+/************************/
+#define MPU6050
+/************************/
+/*        MAG           */
+/************************/
+#define HMC5883
+//#define AK8975
+/************************/
+/*       BARO           */
+/************************/
+//#define BMP085 0
+#define MS5611 1
+#define BMP280 2
 #define HEX6X
 #define H300
+#endif
+#if (BOARD_CODE == 200)
+#define USE_I2C_PORT0
+/************************/
+/*      ACC/GYRO        */
+/************************/
+#define MPU6500
+/************************/
+/*        MAG           */
+/************************/
+#define HMC5883
+//#define AK8975
+/************************/
+/*       BARO           */
+/************************/
+//#define BMP085 0
+#define MS5611 1
+#define BMP280 2
+#define HEX6X
+#define H630
 #endif
 #ifdef GPS
 #define GPS_UBLOX
@@ -51,9 +102,9 @@
 /*                    Sensor Type definitions                   */
 /****************************************************************/
 
-#if defined(ADXL345) || defined(BMA020) || defined(BMA180) || defined(NUNCHACK) || defined(MMA7455) || defined(ADCACC) || defined(LIS3LV02) || defined(LSM303DLx_ACC) || defined(MPU6050) || defined(NUNCHUCK)
+#if defined(ADXL345) || defined(BMA020) || defined(BMA180) || defined(NUNCHACK) || defined(MMA7455) || defined(ADCACC) || defined(LIS3LV02) || defined(LSM303DLx_ACC) || defined(MPU6050) || defined(MPU6500) || defined(NUNCHUCK)
 #define STACK_ACC 1
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 #ifndef OPTION_RC
 #define ACC_ORIENTATION(X, Y, Z)  {Sensor.rawACC[0] = X; Sensor.rawACC[1] = Y; Sensor.rawACC[2] = Z;}
 #define GYRO_ORIENTATION(X, Y, Z) {Sensor.rawGYRO[0] = X; Sensor.rawGYRO[1] = Y; Sensor.rawGYRO[2] = Z;}
@@ -81,7 +132,7 @@
 #define MAG_ORIENTATION(X, Y, Z)  {Sensor.rawMAG[0] = X; Sensor.rawMAG[1] = Y; Sensor.rawMAG[2] = Z;}
 #endif
 
-#if defined(ITG3200) || defined(L3G4200D) || defined(MPU6050) || defined(WMP)
+#if defined(ITG3200) || defined(L3G4200D) || defined(MPU6050) || defined(MPU6500) || defined(WMP)
 #define STACK_GYRO 1
 #else
 #define STACK_GYRO 0
