@@ -68,7 +68,7 @@ void SetFlashState(CAL_FLASH_STATE_T* State)
 void temperatureRead(float *temperatureOut)
 {
 #if STACK_ACC
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 	*temperatureOut = (MPU6050_getTemperature()-512)/340+34;
 	*temperatureOut = *temperatureOut*25/20;
 #endif
@@ -76,7 +76,7 @@ void temperatureRead(float *temperatureOut)
 }
 
 #if STACK_GYRO
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 #endif
 #endif
 /* Sensors Init */
@@ -86,7 +86,7 @@ void SensorInitACC()
 	bool FlashValid;
 	
 	if(!SensorInitState.ACC_Done) {
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 		SensorInitState.ACC_Done = MPU6050_initialize();
 		SensorInitState.GYRO_Done = SensorInitState.ACC_Done;
 #endif
@@ -128,7 +128,7 @@ void SensorInitGYRO()
 	float Cal[GYRO_CAL_DATA_SIZE];
 	bool FlashValid;
 	if(!SensorInitState.GYRO_Done) {
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 		SensorInitState.GYRO_Done = MPU6050_initialize();
 		SensorInitState.ACC_Done = SensorInitState.GYRO_Done;
 #endif
@@ -310,7 +310,7 @@ void SensorReadACC()
 {
 #if STACK_ACC
 	int16_t rawACC[3];
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 	MPU6050_getAcceleration(&rawACC[0],&rawACC[1], &rawACC[2]);
 #endif
 	ACC_ORIENTATION(rawACC[0],rawACC[1],rawACC[2]);
@@ -321,7 +321,7 @@ void SensorReadGYRO()
 {
 #if STACK_GYRO
 	int16_t rawGYRO[3];
-#ifdef MPU6050
+#if defined(MPU6050) || defined(MPU6500)
 	MPU6050_getRotation(&rawGYRO[0],&rawGYRO[1], &rawGYRO[2]);
 #endif
 	GYRO_ORIENTATION(rawGYRO[0],rawGYRO[1],rawGYRO[2]);
