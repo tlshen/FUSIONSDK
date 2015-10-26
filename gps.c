@@ -870,8 +870,13 @@ void setupGpsUART()
 	CLK_EnableModuleClock(UART1_MODULE);
 	/* Peripheral clock source */
 	CLK_SetModuleClock(UART1_MODULE, CLK_CLKSEL1_UARTSEL_HIRC, CLK_CLKDIV0_UART(1));
+#if (BOARD_CODE == 200)
+  /* Set PE multi-function pins for UART0 RXD, TXD */
+	SYS->GPA_MFPL = SYS_GPA_MFPL_PA1MFP_UART1_RXD | SYS_GPA_MFPL_PA0_UART1_TXD;
+#else
 	/* Set PE multi-function pins for UART0 RXD, TXD */
 	SYS->GPE_MFPH = SYS_GPE_MFPH_PE13MFP_UART1_RXD | SYS_GPE_MFPH_PE12MFP_UART1_TXD;
+#endif
 	/* Reset UART module */
 	SYS_ResetModule(UART1_RST);
 	/* Configure UART0 and set UART0 Baudrate */
