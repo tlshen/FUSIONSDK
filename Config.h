@@ -17,8 +17,9 @@
 #define CONFIG_H_
 #include "AHRSLib.h"
 #define VERSION_CODE 142
-#define BOARD_CODE   200 /* KINPO*/
-//#define BOARD_CODE   140
+//#define BOARD_CODE   200 /* KINPO*/
+//#define BOARD_CODE   150 /* HEX Support */
+#define BOARD_CODE   140
 #define UART_BAUD_RATE 115200
 #define OUTPUT_DATA_INTERVAL 20  //milliseconds
 #define DEBUG_PRINT printf
