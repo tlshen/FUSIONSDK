@@ -143,9 +143,9 @@ void SensorInitGYRO()
 			GyroOffset[0] = Cal[0];
 			GyroOffset[1] = Cal[1];
 			GyroOffset[2] = Cal[2];
-			GyroScale[0]  = Cal[3]*IMU_DEG_PER_LSB_CFG;
-			GyroScale[1]  = Cal[4]*IMU_DEG_PER_LSB_CFG;
-			GyroScale[2]  = Cal[5]*IMU_DEG_PER_LSB_CFG;
+			GyroScale[0]  = Cal[3];
+			GyroScale[1]  = Cal[4];
+			GyroScale[2]  = Cal[5];
 			printf("GYRO calibration from [FLASH]\n");
 			
 		}
@@ -153,9 +153,9 @@ void SensorInitGYRO()
 			GyroOffset[0] = 0;
 			GyroOffset[1] = 0;
 			GyroOffset[2] = 0;
-			GyroScale[0] = IMU_DEG_PER_LSB_CFG;
-			GyroScale[1] = IMU_DEG_PER_LSB_CFG;
-			GyroScale[2] = IMU_DEG_PER_LSB_CFG;
+			GyroScale[0] = 1.0;
+			GyroScale[1] = 1.0;
+			GyroScale[2] = 1.0;
 			printf("GYRO calibration from - [DEFAULT]\n");
 		}
 		printf("Offset: %f  %f  %f\n", GyroOffset[0], GyroOffset[1], GyroOffset[2]);
