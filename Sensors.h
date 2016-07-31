@@ -110,4 +110,6 @@ float GetBaroAltitude(void);
 void SetBaroAltitude(float alt);
 BaroInfo_T* GetBaroInfo(void);
 #endif
+void DisplayCalACC(void);
+void DisplayCalGYRO(void);
 #endif

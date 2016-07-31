@@ -603,6 +603,7 @@ void WaitEndFlag0(uint16_t timeout)
 uint8_t NVT_WriteByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len)
 {
 	uint8_t i;
+	uint32_t cnt=0;
 	
 	Tx_Data0[0]=address;
 	
@@ -616,7 +617,15 @@ uint8_t NVT_WriteByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len)
 #ifdef M451
 	s_I2C0HandlerFn = (I2C_FUNC)I2C_Callback_Tx_Continue;
 	s_I2C1HandlerFn = (I2C_FUNC)I2C_Callback_Tx_Continue;
-	while(I2C_PORT->CTL & I2C_CTL_STO_Msk);
+	while(I2C_PORT->CTL & I2C_CTL_STO_Msk) {
+          cnt++;
+          if (cnt>65535) {
+            __disable_irq();
+            SYS_UnlockReg();
+            SYS_ResetChip();
+          }
+        }
+	cnt=0;
 	I2C_SET_CONTROL_REG(I2C_PORT, I2C_CTL_STA);
 	WaitEndFlag0(1);
 #else
@@ -631,6 +640,7 @@ uint8_t NVT_WriteByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len)
 uint8_t NVT_ReadByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len, uint16_t timeout)
 {
 	uint8_t i;
+	uint32_t cnt=0;
 	
 	RxLen0 = 0;
 	DataLen0 = 0;
@@ -642,7 +652,15 @@ uint8_t NVT_ReadByteContinue_addr8(uint8_t address,uint8_t* data, uint8_t len, u
 #ifdef M451
 	s_I2C0HandlerFn = (I2C_FUNC)I2C_Callback_Rx_Continue;
 	s_I2C1HandlerFn = (I2C_FUNC)I2C_Callback_Rx_Continue;
-	while(I2C_PORT->CTL & I2C_CTL_STO_Msk);
+	while(I2C_PORT->CTL & I2C_CTL_STO_Msk){
+          cnt++;
+          if (cnt>65535) {
+            __disable_irq();
+            SYS_UnlockReg();
+            SYS_ResetChip();
+          }
+        }
+	cnt=0;
 	I2C_SET_CONTROL_REG(I2C_PORT, I2C_CTL_STA);
 
 	WaitEndFlag0(timeout);

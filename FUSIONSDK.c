@@ -117,7 +117,40 @@ void setupUART()
 #endif
 	printf("Version:%d\n", VERSION_CODE);
 }
-
+void DisplayCommandList()
+{
+  printf("*======================================================================*\n"); DelayMsec(10);
+  printf("*            _    _ _____   _____   ______         _                   *\n"); DelayMsec(10);
+  printf("*      /+   | |  | |  __ + / ____| |  ____|       (_)                  *\n"); DelayMsec(10);
+  printf("*     /  +  | |__| | |__) | (___   | |__ _   _ ___ _  ___  _ __        *\n"); DelayMsec(10);
+  printf("*    / /+ + |  __  |  _  / +___ +  |  __| | | / __| |/ _ +| '_ +       *\n"); DelayMsec(10);
+  printf("*   / ____ +| |  | | | + + ____) | | |  | |_| +__ + | (_) | | | |      *\n"); DelayMsec(10);
+  printf("*  /_/    +_+_|  |_|_|  +_+_____/  |_|   +__,_|___/_|+___/|_| |_|      *\n"); DelayMsec(10);
+  printf("*======================================================================*\n"); DelayMsec(10);
+	printf("*Command List:\n"); DelayMsec(10);
+  printf("@dc  - Display Commands\n"); DelayMsec(10);
+	printf("@ss  - Stream Start, start displaying euler angle\n"); DelayMsec(10);
+	printf("@sp  - Stream Stop\n"); DelayMsec(10);
+	printf("@me  - Mode Euler: switch display mode to euler angle\n"); DelayMsec(10);
+	printf("@mr  - Mode Raw: switch display mode to sensor raw data\n"); DelayMsec(10);
+  printf("@mc  - Mode Calibrated: switch display mode to sensor calibrated data\n"); DelayMsec(10);
+  printf("@caz - Calibrate Acc Z, calibrate Acc in Z axis:\n"); DelayMsec(10);
+  printf("     1. Put module on a horizontal plan\n"); DelayMsec(10);
+  printf("     2. Apply command: @caz (calibration should be done in 1 second)\n"); DelayMsec(10);
+  printf("@cgz - Calibrate Gyro Z:calibrate Gyro in Z axis:\n"); DelayMsec(10);
+  printf("     1. Put module steady\n"); DelayMsec(10);
+  printf("     2. Apply command: @cgz\n"); DelayMsec(10);
+  printf("     3. Rotate module right 3 times(1080 degree) around z axis\n"); DelayMsec(10);
+  printf("     4. Leave module staedy (calibration shound be done in 2 seconds)\n"); DelayMsec(10);
+  printf("@bea - Block Erase Acc, reset ACC calibration\n"); DelayMsec(10);
+  printf("@beg - Block Erase Gyro, reset Gyro calibration\n"); DelayMsec(10);
+  printf("@fb  - Format Binary, switch display format to binary (GUI protocol)\n"); DelayMsec(10);
+  printf("@ft  - Format Text, switch display format to text\n"); DelayMsec(10);
+  printf("@da  - Display ACC, display ACC calibration parameters\n"); DelayMsec(10);
+  printf("@dg  - Display GYRO, display GYRO calibration parameters\n"); DelayMsec(10);
+  printf("@dln - Display Loop On, display loop spped on\n"); DelayMsec(10);
+  printf("@dlf - Display Loop Off, display loop off on\n"); DelayMsec(10);
+}
 void setup()
 {
 	setupSystemClock();
@@ -140,6 +173,7 @@ void setup()
 	nvtAHRSInit();
 	SensorsInit();
 	ChronographSet(ChronMain);
+        DisplayCommandList();
 }
 void CommandProcess()
 {
@@ -166,6 +200,22 @@ void CommandProcess()
 			}
 			else if (command == 'b') {// 'b'lock erase flash
 				FlashControl();
+			}
+else if (command == 'd') {// 'd'isplay 'c'ommand list
+        char token = GetChar();
+        if (token == 'c')
+          DisplayCommandList();
+        else if (token == 'a')
+          DisplayCalACC();
+        else if (token == 'g')
+          DisplayCalGYRO();
+        else if (token == 'l') {
+          token = GetChar();
+          if (token == 'n')
+            SetDisplayLoopTime(true);
+          else if (token == 'f')
+            SetDisplayLoopTime(false);
+        }
 			}
 			else if (command == 'p') {// Set 'p'id command
 				SetPID();
