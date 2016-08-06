@@ -258,21 +258,20 @@ void SensorInitBARO()
 	if(SensorInitState.BARO_Done)
 		SensorInitState.BARO_BRAND = BMP085;
 #endif
+#ifdef MS5611
 		SensorInitState.BARO_Done = ms5611Init();
 	if(SensorInitState.BARO_Done) {
 		SensorInitState.BARO_BRAND = MS5611;
 		printf("Baro Sensor - [MS5611]\n"); 
 	}
-	else {
+#endif
+#ifdef BMP280
 		SensorInitState.BARO_Done = Int_BMP280();
 	if(SensorInitState.BARO_Done) {
 			SensorInitState.BARO_BRAND = BMP280;
 			printf("Baro Sensor - [BMP280]\n"); 
 		}
-		else 
-			printf("Baro Sensor - [NA]\n"); 
-	}
-
+#endif
 	if(SensorInitState.BARO_Done) {
 		switch (SensorInitState.BARO_BRAND) {
 #ifdef BMP085
@@ -286,18 +285,22 @@ void SensorInitBARO()
 		Sensor.BaroInfo.baroPressureSum = 0;
 			break;
 #endif
+#ifdef MS5611
 			case MS5611:
 			{
 		bool isMs5611TestPassed = ms5611SelfTest();
 		printf("Baro Test Passed:%d\n",isMs5611TestPassed);
 			}
 			break;
+#endif
+#ifdef BMP280
 			case BMP280:
 			{
 		bool isBMP280TestPassed = BMP280SelfTest();
 		printf("Baro Test Passed:%d\n",isBMP280TestPassed);
 			}
 			break;
+#endif
 		}
 		printf("BARO connect - [OK]\n");
 	}
