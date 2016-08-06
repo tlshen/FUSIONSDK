@@ -35,8 +35,8 @@
 #define MOTORS_TEST_RATIO          (uint16_t)(0.5*(1<<16))
 #define MOTORS_TEST_ON_TIME_MS     10
 #define MOTORS_TEST_DELAY_TIME_MS  50
-#define ESC_UPDATE_FREQ            400
-#define ESC_FREQ_UPDATE_FREQ_DIV_1000000  0.0004f
+#define ESC_UPDATE_FREQ            500
+#define ESC_FREQ_UPDATE_FREQ_DIV_1000000  0.0005f
 #define MOTORS_ESC_DELAY           1500 /*Frame*/
 #ifdef HEX6X 
 #define MOTOR_NUMBER               6
