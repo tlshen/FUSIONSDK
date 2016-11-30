@@ -743,7 +743,7 @@ void EINT1_IRQHandler(void)
 		SetTickSSVRC(4);
 		Rx_num=SSV7241_RxPacket(Databuf);
 		
-		if(Rx_num) {
+		if(Rx_num>=2) {
 			RxData.index_old=RxData.index;
 			ChannelFlag=Databuf[0];
 			channel=Databuf[1];
