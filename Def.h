@@ -42,8 +42,9 @@
 /************************/
 /*        MAG           */
 /************************/
-#define HMC5883
-//#define AK8975
+#define HMC5883     1
+#define AK8975      2
+#define IST8310     3
 /************************/
 /*       BARO           */
 /************************/
@@ -60,8 +61,9 @@
 /************************/
 /*        MAG           */
 /************************/
-#define HMC5883
-//#define AK8975
+#define HMC5883     1
+#define AK8975      2
+#define IST8310     3
 /************************/
 /*       BARO           */
 /************************/
@@ -80,8 +82,9 @@
 /************************/
 /*        MAG           */
 /************************/
-#define HMC5883
-//#define AK8975
+#define HMC5883     1
+#define AK8975      2
+#define IST8310     3
 /************************/
 /*       BARO           */
 /************************/
@@ -119,18 +122,9 @@
 #define GYRO_ORIENTATION(X, Y, Z)
 #endif
 
-#if defined(HMC5883) || defined(HMC5843) || defined(AK8975) || defined(MAG3110) || defined(AK8975)
-#define STACK_MAG 1
-#ifdef HMC5883
-#define MAG_ORIENTATION(X, Y, Z)  {Sensor.rawMAG[0] = X; Sensor.rawMAG[1] = Y; Sensor.rawMAG[2] = Z;}
-#endif
-#ifdef AK8975
-#define MAG_ORIENTATION(X, Y, Z)  {Sensor.rawMAG[0] = Y; Sensor.rawMAG[1] = X; Sensor.rawMAG[2] = Z;}
-#endif
-#else
-#define STACK_MAG 0
-#define MAG_ORIENTATION(X, Y, Z)  {Sensor.rawMAG[0] = X; Sensor.rawMAG[1] = Y; Sensor.rawMAG[2] = Z;}
-#endif
+#define MAG_ORIENTATION_HMC5883(X, Y, Z)  {Sensor.rawMAG[0] = X; Sensor.rawMAG[1] = Y; Sensor.rawMAG[2] = Z;}
+#define MAG_ORIENTATION_AK8975(X, Y, Z)  {Sensor.rawMAG[0] = Y; Sensor.rawMAG[1] = X; Sensor.rawMAG[2] = Z;}
+#define MAG_ORIENTATION_IST8310(X, Y, Z)  {Sensor.rawMAG[0] = Y; Sensor.rawMAG[1] = X; Sensor.rawMAG[2] = Z;}
 
 #if defined(ITG3200) || defined(L3G4200D) || defined(MPU6050) || defined(MPU6500) || defined(WMP)
 #define STACK_GYRO 1

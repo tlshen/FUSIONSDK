@@ -43,6 +43,7 @@ typedef struct {
 	bool BARO_Done;
 	uint8_t BARO_BRAND;
 	int32_t BARO_BasePressure;
+  uint8_t MAG_NUM;
 }SensorInit_T;
 typedef struct {
 	bool ACC_FLASH;

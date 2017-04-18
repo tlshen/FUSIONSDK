@@ -536,6 +536,11 @@
               <FileType>1</FileType>
               <FilePath>.\gps.c</FilePath>
             </File>
+            <File>
+              <FileName>ist8310_driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\ist8310_driver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -755,6 +760,11 @@
               <FileName>gps.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\gps.h</FilePath>
+            </File>
+            <File>
+              <FileName>IST8310_driver.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\IST8310_driver.h</FilePath>
             </File>
           </Files>
         </Group>

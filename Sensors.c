@@ -32,6 +32,7 @@
 #ifdef BMP280
 #include "BMP280.h"
 #endif
+#include "ist8310_driver.h"
 #include "Sensors.h"
 #include "FlashCtrl.h"
 #include "Timer_Ctrl.h"
@@ -189,19 +190,28 @@ void SensorInitMAG()
 	int i;
 	
 	if(!SensorInitState.MAG_Done) {
-#ifdef HMC5883
 		SensorInitState.MAG_Done = hmc5883lInit();
-		hmc5883lSelfTest();
-		hmc5883lGetRatioFactor(&magCal[0],&magCal[1],&magCal[2]);
-#endif
-#ifdef AK8975
-		SensorInitState.MAG_Done = AK8975_initialize();
-#endif
+    if(SensorInitState.MAG_Done) {
+      SensorInitState.MAG_NUM = HMC5883;
+      hmc5883lSelfTest();
+      hmc5883lGetRatioFactor(&magCal[0],&magCal[1],&magCal[2]);
+    }
+    if(!SensorInitState.MAG_Done) {
+		  SensorInitState.MAG_Done = ist8310_Init();
+      if(SensorInitState.MAG_Done)
+        SensorInitState.MAG_NUM = IST8310;
+    }
+
+    if(!SensorInitState.MAG_Done) {
+      SensorInitState.MAG_Done = AK8975_initialize();
+      if(SensorInitState.MAG_Done)
+        SensorInitState.MAG_NUM = AK8975;
+    }
 	}
 	
 	if(SensorInitState.MAG_Done) {
 		if (report_format == REPORT_FORMAT_TEXT) 
-		printf("MAG connect - [OK]\n");
+		printf("MAG %d connect - [OK]\n", SensorInitState.MAG_NUM);
 		FlashValid = GetFlashCal(SENSOR_MAG, Cal);
 		
 		if(FlashValid) {
@@ -225,15 +235,16 @@ void SensorInitMAG()
 			MagCalMatrix[9] = MAG_CAL9;*/
 			for(i=0;i<MAG_CAL_DATA_SIZE;i++)
 				MagCalMatrix[i] = 0;
-#ifdef HMC5883
-			MagCalMatrix[3] = magCal[0];//MAG_GAUSS_PER_LSB;
-			MagCalMatrix[4] = magCal[1];//MAG_GAUSS_PER_LSB;
-			MagCalMatrix[5] = magCal[2];//MAG_GAUSS_PER_LSB;
-#else
-			MagCalMatrix[3] = MAG_GAUSS_PER_LSB;
-			MagCalMatrix[4] = MAG_GAUSS_PER_LSB;
-			MagCalMatrix[5] = MAG_GAUSS_PER_LSB;
-#endif
+      if(SensorInitState.MAG_NUM==HMC5883) {
+        MagCalMatrix[3] = magCal[0];//MAG_GAUSS_PER_LSB;
+        MagCalMatrix[4] = magCal[1];//MAG_GAUSS_PER_LSB;
+        MagCalMatrix[5] = magCal[2];//MAG_GAUSS_PER_LSB;
+      }
+      else {
+        MagCalMatrix[3] = MAG_GAUSS_PER_LSB;
+        MagCalMatrix[4] = MAG_GAUSS_PER_LSB;
+        MagCalMatrix[5] = MAG_GAUSS_PER_LSB;
+      }
 			if (report_format == REPORT_FORMAT_TEXT) 
 			printf("MAG calibration from - [DEFAULT], Q:%d\n",CalFlashState.MAG_QFACTOR);
 		}
@@ -315,9 +326,7 @@ void SensorsInit()
 #if STACK_GYRO
 	SensorInitGYRO();
 #endif
-#if STACK_MAG
 	SensorInitMAG();
-#endif
 #if STACK_BARO
 	SensorInitBARO();
 #endif
@@ -350,13 +359,18 @@ void SensorReadGYRO()
 void SensorReadMAG()
 {
 	int16_t rawMAG[3];
-#ifdef HMC5883
-	hmc5883lGetHeading(&rawMAG[0],&rawMAG[1], &rawMAG[2]);
-#endif
-#ifdef AK8975
-	AK8975_getHeading(&rawMAG[0],&rawMAG[1], &rawMAG[2]);
-#endif
-	MAG_ORIENTATION(rawMAG[0],rawMAG[1],rawMAG[2]);
+  if(SensorInitState.MAG_NUM==HMC5883) {
+    hmc5883lGetHeading(&rawMAG[0],&rawMAG[1], &rawMAG[2]);
+    MAG_ORIENTATION_HMC5883(rawMAG[0],rawMAG[1],rawMAG[2]);
+  }
+  else if(SensorInitState.MAG_NUM==AK8975) {
+    AK8975_getHeading(&rawMAG[0],&rawMAG[1], &rawMAG[2]);
+    MAG_ORIENTATION_AK8975(rawMAG[0],rawMAG[1],rawMAG[2]);
+  }
+  else if(SensorInitState.MAG_NUM==IST8310) {
+    ist8310_GetXYZ(&rawMAG[0]);
+    MAG_ORIENTATION_IST8310(rawMAG[0],rawMAG[1],rawMAG[2]);
+  }
 	//printf("Raw Mag:%d %d %d\n",Sensor.rawMAG[0], Sensor.rawMAG[1], Sensor.rawMAG[2]);
 }
 #if STACK_BARO
@@ -458,7 +472,6 @@ void SensorsRead(char SensorType, char interval)
 		nvtInputSensorRawACC(&Sensor.rawACC[0]);
 	}
 #endif
-#if STACK_MAG
 	if(SensorType&SENSOR_MAG&&SensorInitState.MAG_Done) {
 		if((GetFrameCount()%interval)==0) {
 		SensorReadMAG();
@@ -471,7 +484,6 @@ void SensorsRead(char SensorType, char interval)
 		Sensor.rawMAG[2] = 0;
 		nvtInputSensorRawMAG(&Sensor.rawMAG[0]);
 	}
-#endif
 	#if STACK_GYRO
 	if(SensorType&SENSOR_GYRO&&SensorInitState.GYRO_Done) {
 		SensorReadGYRO();
@@ -502,7 +514,6 @@ void SensorsDynamicCalibrate(char SensorType)
 		}
 	}
 #endif
-#if STACK_MAG
 	if(SensorType&SENSOR_MAG&&SensorInitState.MAG_Done) {
 		if(!SensorCalState.MAG_Done) {
 			static float rpy[3],lastY,diff;
@@ -518,7 +529,6 @@ void SensorsDynamicCalibrate(char SensorType)
 			lastY = rpy[2];
 		}
 	}
-#endif
 }
 
 char GetSensorInitState()
