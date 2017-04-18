@@ -265,22 +265,28 @@ void SensorInitMAG()
 void SensorInitBARO()
 {
 #ifdef BMP085
+	if(!SensorInitState.BARO_Done) {
 		SensorInitState.BARO_Done = begin(BMP085_ULTRAHIGHRES);
 	if(SensorInitState.BARO_Done)
 		SensorInitState.BARO_BRAND = BMP085;
+	}
 #endif
 #ifdef MS5611
+	if(!SensorInitState.BARO_Done) {
 		SensorInitState.BARO_Done = ms5611Init();
 	if(SensorInitState.BARO_Done) {
 		SensorInitState.BARO_BRAND = MS5611;
 		printf("Baro Sensor - [MS5611]\n"); 
 	}
+	}
 #endif
 #ifdef BMP280
+	if(!SensorInitState.BARO_Done) {
 		SensorInitState.BARO_Done = Int_BMP280();
 	if(SensorInitState.BARO_Done) {
 			SensorInitState.BARO_BRAND = BMP280;
 			printf("Baro Sensor - [BMP280]\n"); 
+		}
 		}
 #endif
 	if(SensorInitState.BARO_Done) {

@@ -150,8 +150,8 @@ int32_t ChronographRead(char Chron)
 {
 	int32_t chron_diff = (tick_counter - Chronograph[Chron].currentTime);
 	
-	if(Chron==ChronMain)
-		UPDATE_DT = (float)chron_diff/1000;
+	//if(Chron==ChronMain)
+	//	UPDATE_DT = (float)chron_diff/1000;
 	
 	return chron_diff;
 }
