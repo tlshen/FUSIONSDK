@@ -36,14 +36,23 @@ void AccCalibration()
 	const char calibration_done = 'd';
 	char side = atoi(&direction);
 	signed char status;
+	int i;
 	
 	if (direction == 'z')
 		side = 0;
 	else
 		side = atoi(&direction);
 	
-	if ((direction == '0')||(direction == 'z'))
+	if ((direction == '0')||(direction == 'z')) {
+		nvtResetDirection();
+		nvtSetCalDataDefault(SENSOR_ACC);
+		for(i=0; i<5000; i++) {
+			SensorsRead(SENSOR_ACC|SENSOR_GYRO|SENSOR_BARO,1);
+			nvtUpdateAHRS(SENSOR_ACC);
+		}
+		//report_ahrs_euler();
 		nvtCalACCInit();
+	}
 	
 	do {
 		DelayMsec(1);
@@ -65,7 +74,6 @@ void GyroCalibration()
 {
 	const char axis_done = GetChar();
 	const char axis = axis_done - 0x78;
-	//const char calibration_done = 'd';
 	
 	signed char status;
 	
@@ -73,12 +81,7 @@ void GyroCalibration()
 	
 	do {
 		SensorsRead(SENSOR_GYRO,1);
-#ifndef OPTION_RC
-		DelayMsec(5);
-#else
 		DelayMsec(16);
-#endif
-		//printf("T:%d\n",getTickCount());
 		status=nvtGyroScaleCalibrate(axis);	
 		led_arm_state(LED_STATE_TOGGLE);
 		UpdateLED();
@@ -91,17 +94,14 @@ void GyroCalibration()
 }
 void MagCalibration()
 {
-	char calibration_done;
+	const char calibration_done = 'd';
 	signed char status;
+	uint8_t CalQFactor;
 	int16_t RawMAG[3];
 	
 	nvtCalMAGInit();
 	do {
-#ifndef OPTION_RC
-		DelayMsec(160);
-#else
 		DelayMsec(320);
-#endif
 		SensorsRead(SENSOR_MAG,1);
 		status = nvtCalMAGBufferFill();
 		nvtGetSensorRawMAG(RawMAG);
@@ -115,10 +115,6 @@ void MagCalibration()
 	
 	if(status==STATUS_CAL_DONE) {
 		CalQFactor = nvtGetMagCalQFactor();
-		if(CalQFactor<MAG_CAL_SUCESS_TH)
-			calibration_done = 'd';
-		else
-			calibration_done = 'f';
 		if (report_format == REPORT_FORMAT_BINARY) {
 			Serial_write((char*)&calibration_done, 1);
 			Serial_write((char*)&CalQFactor, 1);

@@ -244,7 +244,7 @@ float GetFloatCounter(void)
 void UpdateFlashCal(int8_t sensorType, bool erase)
 {
 	uint8_t CalBase, i, QualityFactor;
-	float mean[3], scale[3],matrix[MAG_CAL_DATA_SIZE];
+	float mean[3], scale[3], rotate[9], matrix[MAG_CAL_DATA_SIZE];
 	CAL_FLASH_STATE_T* FlashState;
 	
 	FlashState =  GetFlashState();
@@ -279,6 +279,7 @@ void UpdateFlashCal(int8_t sensorType, bool erase)
 		CalBase=CAL_BASE_ACC;
 		nvtGetAccOffset(mean);
 		nvtGetAccScale(scale);
+		nvtGetAccRotate(rotate);
 		if(erase) {
 			DATA_FLASH_Write(CalBase++,i162dw((int16_t)FIELD_INVALID));
 			FlashState->ACC_FLASH = false;
@@ -293,13 +294,18 @@ void UpdateFlashCal(int8_t sensorType, bool erase)
 		DATA_FLASH_Write(CalBase++,float2dw(scale[0]));
 		DATA_FLASH_Write(CalBase++,float2dw(scale[1]));
 		DATA_FLASH_Write(CalBase++,float2dw(scale[2]));
+                for(i=0;i<9;i++)
+		  DATA_FLASH_Write(CalBase++,float2dw(rotate[i]));
 		if (report_format == REPORT_FORMAT_TEXT) {
 			printf("AccMean.x:%f\n", mean[0]);
 		printf("AccMean.y:%f\n", mean[1]);
 		printf("AccMean.z:%f\n", mean[2]);
 		printf("AccScale.x:%f\n", scale[0]);
 		printf("AccScale.y:%f\n", scale[1]);
-			printf("AccScale.z:%f\n", scale[2]);
+                printf("AccScale.z:%f\n", scale[2]);
+                printf("M[0][1][2]: %f %f %f\n", rotate[0], rotate[1], rotate[2]);
+		printf("M[3][4][5]: %f %f %f\n", rotate[3], rotate[4], rotate[5]);
+		printf("M[6][7][8]: %f %f %f\n", rotate[6], rotate[7], rotate[8]);
 		}
 	}
 	if(sensorType&SENSOR_MAG) {
