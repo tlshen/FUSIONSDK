@@ -374,6 +374,17 @@ void report_status()
 void report_sensors()
 {
 	if(stream_mode==STREAM_PAUSE)
+
+		    // Rate limit telemetry output to prevent excessive CPU usage and potential timing issues
+		    // Only output telemetry every 50ms (20Hz) to avoid interfering with control loops
+		    static uint32_t lastReportTime = 0;
+	    uint32_t currentTime = GetFrameCount(); // Replace with actual time function if available
+
+	    // Only report data if more than 50ms (at 10kHz tick = 500 ticks) has elapsed
+	    if((currentTime - lastReportTime) < 500) {
+			        return;
+		}
+	    lastReportTime = currentTime;
 		return;
 	
 	if (report_mode == REPORT_AHRS_EULER) {
