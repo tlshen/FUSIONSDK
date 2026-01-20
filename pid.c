@@ -63,7 +63,7 @@ float pidUpdate(PidObject* pid, const float measured, const bool updateError)
         pid->integ = pid->iLimitLow;
     }
 
-    pid->deriv = (pid->error - pid->prevError) / pid->dt/50;
+    pid->deriv = (pid->error - pid->prevError) / pid->dt;
 
     pid->outP = pid->kp * pid->error;
     pid->outI = pid->ki * pid->integ;
